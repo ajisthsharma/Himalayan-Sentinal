@@ -1,0 +1,9 @@
+{
+  "name": "himalayan-sentinel",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "tsc -b && vite build", "test": "vitest run", "lint": "eslint .", "preview": "vite preview" },
+  "dependencies": { "@vitejs/plugin-react": "latest", "vite": "latest", "typescript": "5.7.3", "react": "latest", "react-dom": "latest" },
+  "devDependencies": { "vitest": "latest", "jsdom": "latest", "eslint": "latest", "@eslint/js": "latest", "typescript-eslint": "latest", "@types/react": "latest", "@types/react-dom": "latest" }
+}
