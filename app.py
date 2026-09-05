@@ -89,7 +89,7 @@ async def get_dashboard():
 # Serve the HTML UI on the root URL
 @app.get("/", response_class=HTMLResponse)
 async def serve_ui():
-    if os.path.exists("index.html"):
-        with open("index.html", "r") as f:
+    if os.path.exists("dashboard.html"):
+        with open("dashboard.html", "r") as f:
             return f.read()
-    return "<h1>index.html not found! Please create it in the same folder.</h1>"
+    return "<h1>dashboard.html not found! Please create it in the same folder.</h1>"
