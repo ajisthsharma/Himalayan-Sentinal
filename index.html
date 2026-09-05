@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Himalayan Sentinel Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 border-b border-gray-700 pb-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-blue-400">HIMALAYAN SENTINEL</h1>
+                <p class="text-gray-400 mt-1">Live Edge-AI Flash Flood Early Warning Network</p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+                <span class="text-green-400 text-sm font-semibold">System Live</span>
+            </div>
+        </header>
+
+        <!-- Grid for Nodes -->
+        <div id="node-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Nodes will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const getAlertColor = (alert) => {
+            if (alert === 'CRITICAL') return 'bg-red-900 border-red-500 text-red-100';
+            if (alert === 'WARNING') return 'bg-orange-900 border-orange-500 text-orange-100';
+            if (alert === 'WATCH') return 'bg-yellow-900 border-yellow-500 text-yellow-100';
+            return 'bg-gray-800 border-gray-600 text-gray-200'; // NORMAL
+        };
+
+        const getHealthBadge = (health) => {
+            if (health === 'HEALTHY') return '<span class="bg-green-600 text-xs px-2 py-1 rounded">HEALTHY</span>';
+            return `<span class="bg-red-600 text-xs px-2 py-1 rounded animate-pulse">${health}</span>`;
+        };
+
+        async function fetchDashboard() {
+            try {
+                const response = await fetch('/api/v1/dashboard');
+                const data = await response.json();
+                
+                const grid = document.getElementById('node-grid');
+                grid.innerHTML = ''; // Clear old data
+
+                Object.keys(data).sort().forEach(nodeId => {
+                    const node = data[nodeId];
+                    const cardColor = getAlertColor(node.alert);
+                    
+                    const card = `
+                        <div class="border-2 rounded-lg p-5 shadow-lg ${cardColor} transition-all duration-300">
+                            <div class="flex justify-between items-start mb-4">
+                                <h2 class="text-xl font-bold font-mono">${node.node_id.replace('_', ' ')}</h2>
+                                ${getHealthBadge(node.health)}
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between border-b border-gray-700/50 pb-1">
+                                    <span class="opacity-80">AI Risk Score:</span>
+                                    <span class="font-bold">${(node.probability * 100).toFixed(1)}%</span>
+                                </div>
+                                <div class="flex justify-between border-b border-gray-700/50 pb-1">
+                                    <span class="opacity-80">Alert Tier:</span>
+                                    <span class="font-bold tracking-wider">${node.alert}</span>
+                                </div>
+                                <div class="flex justify-between pt-1">
+                                    <span class="opacity-80">Last Sync:</span>
+                                    <span class="font-mono text-xs opacity-75">${node.timestamp}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    grid.innerHTML += card;
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Fetch data every 1 second
+        setInterval(fetchDashboard, 1000);
+        fetchDashboard();
+    </script>
+</body>
+</html>
