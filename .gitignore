@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.tsbuildinfo
+corepack*
+node.exe
+nodevars.bat
+install_tools.bat
+npm*
+npx*
+pnpm*
+pnpx*
+yarn*
+src/data/*.csv
+src/data/group-guide.txt
