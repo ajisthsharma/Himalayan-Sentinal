@@ -1,41 +1,34 @@
-# HIMALAYAN SENTINEL — SIH 2026 PS 192
+# Himalayan Sentinel — SIH 2026 PS 192
 
-An interactive, local-first command-centre prototype for the submitted **HIMALAYAN SENTINEL** concept: a distributed IoT and Edge-AI early-warning system for flash floods in hilly regions.
+Himalayan Sentinel is an early-warning-system prototype for flash floods in hilly regions. This repository includes both a local-first Vite/TypeScript command-centre UI and a Python/FastAPI telemetry-inference service with a reproducible XGBoost model and mesh simulator.
 
-## Run it
+## Frontend prototype
 
 ```powershell
 npm install
 npm run dev
 ```
 
-Open the local address printed by Vite. For release checks, run `npm test`, `npm run lint`, and `npm run build`.
+Run `npm test`, `npm run lint`, and `npm run build` for release checks. The deterministic risk demo is implemented in `src/risk.ts`; its scenario UI is in `src/App.tsx`.
 
-## 2–3 minute demo story
+## FastAPI telemetry service
 
-1. Start at **Reset / Normal**. Explain that the GIS view uses simulated terrain, the mesh is healthy, and the risk engine is deterministic for a reliable demo.
-2. Click **Rainfall escalation**. Show rain intensity, soil saturation, and risk contribution increasing.
-3. Click **Upstream flood cascade**. Follow the event chain from Kedar upstream to the bridge and Ward 03. The map changes to an evacuation zone and the warning release becomes available.
-4. Click **Node HS-02 outage**. Highlight that the bridge node is explicitly OFFLINE, mesh rerouting occurs, and confidence falls. The system never treats an offline node as flood evidence.
-5. Return to **Reset / Normal**. This represents recovery and normal edge monitoring.
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python train_flood_model.py
+uvicorn app:app --reload
+```
 
-## Architecture represented
+In another terminal, run `python simulate_mesh.py`. Open `http://127.0.0.1:8000` for the Python service's live dashboard.
 
-`telemetry inputs → validation / node health → feature aggregation → fused risk + confidence → severity → recommended action`
+## Components
 
-The UI models 3–5 heterogeneous ESP32/LoRa logical nodes, an edge layer, local buffering, a gateway, cross-node evidence fusion, and dashboard/alert delivery. It intentionally uses no credentials, live map service, hardware, or paid feed.
+- `src/` — command-centre frontend and deterministic risk-engine prototype.
+- `app.py` — FastAPI telemetry ingestion, node-health assessment, and ML inference API.
+- `train_flood_model.py` — synthetic catchment-data generation and model training.
+- `simulate_mesh.py` — four-node flood-event telemetry simulation.
+- `dashboard.html` — live dashboard served by the FastAPI application.
 
-## Simulated data and limitations
-
-Scenario fixtures supply rainfall rate, soil moisture, river-level trend, slope movement, historical susceptibility, and fusion confidence. `src/risk.ts` is a small, inspectable risk engine: weighted environmental factors are scaled by confidence, then mapped to Normal / Watch / Warning / Critical. This is **not** a calibrated hydrological or ML prediction model and must not be presented as validated accuracy.
-
-To connect real deployment data, replace scenario fixtures with a standard telemetry ingestion adapter (node ID, timestamp, rainfall accumulations, soil moisture, water level/rise rate, temperature/pressure, tilt/vibration, battery, RSSI, local anomaly, node health). Keep health inference independent from hazard inference; an offline node is not flood evidence.
-
-## Project structure
-
-- `src/App.tsx` — responsive control-room demo and scenario controls
-- `src/risk.ts` — modular, deterministic fusion engine
-- `src/risk.test.ts` — risk escalation and confidence tests
-- `src/styles.css` — local GIS-style visual system with no external map key
-
-The application is intentionally a polished front-end prototype rather than an overbuilt distributed backend. A production rollout should calibrate thresholds by basin, validate models using time-aware data splits, add authenticated ingestion, persistence, GIS layers, alert delivery integration, and field-tested safety policy.
+The `himalayan_sentinel_model.joblib` artifact is intentionally unversioned; regenerate it using the training script. This is a proof of concept and not a validated hydrological forecasting system.

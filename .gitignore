@@ -1,3 +1,4 @@
+# JavaScript build outputs and local tooling
 node_modules/
 dist/
 *.tsbuildinfo
@@ -12,3 +13,13 @@ pnpx*
 yarn*
 src/data/*.csv
 src/data/group-guide.txt
+
+# Python bytecode and local environments
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Locally generated model artifacts
+*.joblib
+desktop.ini
